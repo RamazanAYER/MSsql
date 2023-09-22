@@ -1,0 +1,216 @@
+
+create FUNCTION [dbo].[fn_yazi_yaz] (@sayi int)
+RETURNS VARCHAR(255)
+AS
+BEGIN
+
+  DECLARE @yazi VARCHAR(255)
+	declare @s1 varchar(20) = '';
+	declare @s2 varchar(20) = '';
+	declare @s3 varchar(20) = '';
+    
+	select @s1 =
+	(case
+	when @sayi % 10 = 0 then ''
+	when @sayi % 10 = 1 then ' Bir'
+	when @sayi % 10 = 2 then ' İki'
+	when @sayi % 10 = 3 then ' Üç'
+	when @sayi % 10 = 4 then ' Dört'
+	when @sayi % 10 = 5 then ' Beş'
+	when @sayi % 10 = 6 then ' Altı'
+	when @sayi % 10 = 7 then ' Yedi'
+	when @sayi % 10 = 8 then ' Sekiz'
+	when @sayi % 10 = 9 then ' Dokuz'
+	end)
+
+	select @s2 =
+	(case
+	when @sayi % 100 / 10 = 0 then ''
+	when @sayi % 100 / 10 = 1 then ' On'
+	when @sayi % 100 / 10 = 2 then ' Yirmi'
+	when @sayi % 100 / 10 = 3 then ' Otuz'
+	when @sayi % 100 / 10 = 4 then ' Kırk'
+	when @sayi % 100 / 10 = 5 then ' Elli'
+	when @sayi % 100 / 10 = 6 then ' Altmış'
+	when @sayi % 100 / 10 = 7 then ' Yetmiş'
+	when @sayi % 100 / 10 = 8 then ' Seksen'
+	when @sayi % 100 / 10 = 9 then ' Doksan'
+	end)
+
+	select @s3 =
+	(case
+	when @sayi % 1000 / 100 = 0 then ''
+	when @sayi % 1000 / 100 = 1 then ' Yüz'
+	when @sayi % 1000 / 100 = 2 then ' İki yüz'
+	when @sayi % 1000 / 100 = 3 then ' Üç yüz'
+	when @sayi % 1000 / 100 = 4 then ' Dört yüz'
+	when @sayi % 1000 / 100 = 5 then ' Beş yüz'
+	when @sayi % 1000 / 100 = 6 then ' Altı yüz'
+	when @sayi % 1000 / 100 = 7 then ' Yedi yüz'
+	when @sayi % 1000 / 100 = 8 then ' Sekiz yüz'
+	when @sayi % 1000 / 100 = 9 then ' Dokuz yüz'
+	end)
+
+	set @yazi= @s3 + @s2 + @s1;
+
+    RETURN @yazi
+END
+
+
+
+
+CREATE FUNCTION [dbo].[fn_sayi_to_yazi] (@sayi bigint)
+RETURNS VARCHAR(255)
+AS
+BEGIN
+declare @yazi varchar(255)='';
+DECLARE @ssayi VARCHAR(255) = cast(@sayi as varchar(255));
+
+DECLARE @yuzler INT = 0
+DECLARE @binler INT = 0
+DECLARE @milyonlar INT = 0
+DECLARE @milyarlar INT = 0
+DECLARE @trilyonlar INT = 0
+
+
+IF LEN(@ssayi) >= 3
+	begin
+		SET @yuzler = CAST(RIGHT(@ssayi, 3) AS INT)
+		set @ssayi =LEFT(@ssayi, LEN(@ssayi) - 3);
+	end
+ELSE 
+begin 
+	if LEN(@ssayi) > 0
+	begin
+		SET @yuzler = CAST(@ssayi AS INT);
+		set @ssayi = '';
+	end
+end
+
+
+IF LEN(@ssayi) >= 3
+	begin
+		SET @binler = CAST(RIGHT(@ssayi, 3) AS INT)
+		set @ssayi =LEFT(@ssayi, LEN(@ssayi) - 3);
+	end
+ELSE 
+begin 
+	if LEN(@ssayi) > 0
+	begin
+		SET @binler = CAST(@ssayi AS INT);
+		set @ssayi = '';
+	end
+end
+
+
+IF LEN(@ssayi) >= 3
+	begin
+		SET @milyonlar = CAST(RIGHT(@ssayi, 3) AS INT)
+		set @ssayi =LEFT(@ssayi, LEN(@ssayi) - 3);
+	end
+ELSE 
+begin 
+	if LEN(@ssayi) > 0
+	begin
+		SET @milyonlar = CAST(@ssayi AS INT);
+		set @ssayi = '';
+	end
+end
+
+
+IF LEN(@ssayi) >= 3
+	begin
+		SET @milyarlar = CAST(RIGHT(@ssayi, 3) AS INT)
+		set @ssayi =LEFT(@ssayi, LEN(@ssayi) - 3);
+	end
+ELSE 
+begin 
+	if LEN(@ssayi) > 0
+	begin
+		SET @milyarlar = CAST(@ssayi AS INT);
+		set @ssayi = '';
+	end
+end
+
+
+IF LEN(@ssayi) >= 3
+	begin
+		SET @trilyonlar = CAST(RIGHT(@ssayi, 3) AS INT)
+		set @ssayi =LEFT(@ssayi, LEN(@ssayi) - 3);
+	end
+ELSE 
+begin 
+	if LEN(@ssayi) > 0
+	begin
+		SET @trilyonlar = CAST(@ssayi AS INT);
+		set @ssayi = '';
+	end
+end
+
+
+if @trilyonlar>0
+begin
+set @yazi=@yazi+dbo.fn_yazi_yaz(@trilyonlar)+' Trilyon ';
+end;
+
+if @milyarlar>0
+begin
+set @yazi=@yazi+dbo.fn_yazi_yaz(@milyarlar)+' Milyar ';
+end;
+
+
+if @milyonlar>0
+begin
+set @yazi=@yazi+dbo.fn_yazi_yaz(@milyonlar)+' Milyon ';
+end;
+
+
+if @binler>0
+begin
+	if @binler>1
+		set @yazi=@yazi+dbo.fn_yazi_yaz(@binler)+' Bin ';
+	else
+		set @yazi=@yazi+'Bin ';
+end;
+
+if @yuzler>0
+begin
+set @yazi=@yazi+dbo.fn_yazi_yaz(@yuzler)+' ';
+end;
+
+    RETURN @yazi
+END
+
+
+CREATE FUNCTION [dbo].[fn_yaziya_cevir] (@tutar decimal(18,2) ) RETURNS VARCHAR(255)
+AS
+BEGIN
+
+ DECLARE @yazi VARCHAR(255)='';
+
+   DECLARE @kurus BIGINT
+    SET @kurus = CAST((@tutar - FLOOR(@tutar)) * 100 AS BIGINT)
+
+
+    DECLARE @tamsayi BIGINT
+    SET @tamsayi = CAST(FLOOR(@tutar) AS BIGINT)
+	
+	if(@tamsayi>0)
+	set @yazi=dbo.fn_sayi_to_yazi(@tamsayi)+' Türk Lirası ';
+
+	if(@kurus>0)
+	set @yazi=@yazi+dbo.fn_sayi_to_yazi(@kurus)+' Kuruş';
+
+
+
+ return rtrim(ltrim(@yazi))
+END
+
+
+----- Kullanımı
+SELECT dbo.fn_yaziya_cevir(999999999999999.99)
+
+/*
+Sonuç
+Dokuz yüz Doksan Dokuz Trilyon  Dokuz yüz Doksan Dokuz Milyar  Dokuz yüz Doksan Dokuz Milyon  Dokuz yüz Doksan Dokuz Bin  Dokuz yüz Doksan Dokuz  Türk Lirası  Doksan Dokuz  Kuruş
+*/
