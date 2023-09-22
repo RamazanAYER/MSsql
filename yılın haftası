@@ -1,0 +1,25 @@
+CREATE FUNCTION [dbo].[fn_haftaWK](	@dt datetime)RETURNS varchar(9)
+AS
+BEGIN
+	declare @hg int;
+	declare @hf int;
+	declare @ds datetime;
+
+	set @hg=DATEPART(weekday, @dt);
+
+	if @hg=1
+		set @ds=DATEADD(day,-1,@dt); 
+	else
+		set @ds=@dt; 
+
+	set @hf=datepart(week,@ds); 
+
+return CONVERT([varchar](4),datepart(year,@ds))+'-WK'+case when @hf<(10) then '0' else '' end+CONVERT([varchar](2),@hf)
+	
+END
+
+/*
+kullanımı
+select dbo.fn_haftaWK(getdate())
+sonuç : 2023-WK38
+*/
