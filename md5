@@ -1,0 +1,18 @@
+CREATE FUNCTION [dbo].[md5](@veri varchar(255)) RETURNS varchar(32)
+AS
+BEGIN
+	RETURN LOWER(CONVERT(VARCHAR(32), HashBytes('MD5', CONVERT(varchar, @veri)), 2))
+END
+
+
+-- kullanımı
+/*
+select dbo.md5('123')
+sonuç : 202cb962ac59075b964b07152d234b70
+
+select dbo.md5('1234')
+sonuç : 81dc9bdb52d04dc20036dbd8313ed055
+
+select dbo.md5('1235')
+sonuç : 9996535e07258a7bbfd8b132435c5962
+*/
